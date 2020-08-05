@@ -46,6 +46,35 @@ export default function SearchMoviePage() {
     return movieList;
   }
 
+  function sortByLength() {
+    let sortedByTitle = [...moviesData].sort((a, b) => {
+      if (a.length > b.length) {
+        return 1
+      } else {
+        return -1;
+      }
+    });
+    setMoviesData(sortedByTitle);
+  }
+
+  function sortByYear() {
+    /**
+     * Find sorting most efficent sorting algorithm
+     */
+    console.log(moviesData);
+    let sortedByTitle = [...moviesData].sort((a, b) => {
+      if (a > b) {
+        console.log('a.Year > b.Year', a.Year > b.Year)
+        return 1
+      } else {
+        console.log('a.Year > b.Year', a.Year > b.Year)
+        return -1;
+      }
+    });
+    console.log(sortedByTitle);
+    setMoviesData(sortedByTitle);
+  }
+
   return (
     <div>
       <div className="my-5">
@@ -71,11 +100,11 @@ export default function SearchMoviePage() {
         <table className="table my-5">
           <thead>
             <tr>
-              <th scope="col">Title</th>
-              <th scope="col">Year</th>
-              <th scope="col">Genre</th>
-              <th scope="col">Description</th>
-              <th scope="col">Actors</th>
+              <th scope="col" onClick={() => { sortByLength() }}>Title</th>
+              <th scope="col" onClick={() => { sortByYear() }}>Year</th>
+              <th scope="col" onClick={() => { sortByLength() }}>Genre</th>
+              <th scope="col" onClick={() => { sortByLength() }}>Description</th>
+              <th scope="col" onClick={() => { sortByLength() }}>Actors</th>
               <th scope="col">Poster</th>
             </tr>
           </thead>
