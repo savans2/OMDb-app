@@ -1,6 +1,6 @@
 ## How to setup
 
-### `Clone the repository and install node modules`
+### `Clone the repository and install dependencies`
 
 Clone the repository via ```$ git clone git@github.com:savans2/OMDb-app.git```.<br />
 After you cloned the repository change the directory. ```$ cd OMDb-app``` <br />
@@ -8,6 +8,9 @@ After you cloned the repository change the directory. ```$ cd OMDb-app``` <br />
 
 First thing that you need to do now is to install node modules.<br />
 To install node modules write ```npm install```.<br />
+
+Create .env.local file in root directory with variable <br/>
+```REACT_APP_OMDB_API_KEY={api key goes here}```
 
 
 
