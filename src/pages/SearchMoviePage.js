@@ -26,6 +26,7 @@ export default function SearchMoviePage() {
             setMaxNumOfPages((res.totalResults % loadAmount) !== 0 ? parseInt(res.totalResults / loadAmount) + 1 : parseInt(res.totalResults / loadAmount));
             getMoviesData(movieImdbIDS).then(moviesData => {
               setMoviesData([moviesData]);
+              setSortType(undefined);
             });
           } else {
             setErrorMessage(res.Error);
@@ -108,6 +109,7 @@ export default function SearchMoviePage() {
           });
           getMoviesData(movieImdbIDS).then(moviesData => {
             addMovies(moviesData);
+            setSortType(undefined);
           });
         });
     }
