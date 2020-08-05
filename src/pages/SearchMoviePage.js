@@ -75,6 +75,7 @@ export default function SearchMoviePage() {
               <th scope="col">Year</th>
               <th scope="col">Genre</th>
               <th scope="col">Description</th>
+              <th scope="col">Actors</th>
               <th scope="col">Poster</th>
             </tr>
           </thead>
