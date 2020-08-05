@@ -78,6 +78,7 @@ export default function SearchMoviePage() {
         setSortType('desc');
         return (a.Year > b.Year) ? 1 : -1;
       } else {
+        setSortType('asc');
         return (a.Year > b.Year) ? -1 : 1;
       }
     });
