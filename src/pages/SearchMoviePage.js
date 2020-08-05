@@ -7,9 +7,12 @@ export default function SearchMoviePage() {
   const SearchYearRef = useRef();
   const [errorMessage, setErrorMessage] = useState();
   const [moviesData, setMoviesData] = useState();
+  const [page, setPage] = useState(1);
+  const [maxNumOfPages, setMaxNumOfPages] = useState();
+  const [loadAmount, setLoadAmount] = useState(10);
 
   const searchHandler = debounce(() => {
-    const url = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=${SearchTitleRef.current.value}&y=${SearchYearRef.current.value}`;
+    const url = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=${SearchTitleRef.current.value}&y=${SearchYearRef.current.value}&page=${page}`;
 
     if (SearchTitleRef.current.value && SearchTitleRef.current.value.split('')[0] !== ' ') {
       fetch(url).then(res => res.json())
@@ -19,6 +22,7 @@ export default function SearchMoviePage() {
             res.Search.forEach(movie => {
               movieImdbIDS.push(movie.imdbID);
             });
+            setMaxNumOfPages((res.totalResults % loadAmount) !== 0 ? parseInt(res.totalResults / loadAmount) + 1 : parseInt(res.totalResults / loadAmount));
             getMoviesData(movieImdbIDS);
             setErrorMessage('');
           } else {
