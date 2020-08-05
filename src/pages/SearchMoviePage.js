@@ -8,7 +8,7 @@ export default function SearchMoviePage() {
   const [errorMessage, setErrorMessage] = useState();
   const [moviesData, setMoviesData] = useState();
   const [page, setPage] = useState(1);
-  const [maxNumOfPages, setMaxNumOfPages] = useState();
+  const [maxNumOfPages, setMaxNumOfPages] = useState(1);
   const [loadAmount, setLoadAmount] = useState(10);
 
   const searchHandler = debounce(() => {
@@ -22,6 +22,7 @@ export default function SearchMoviePage() {
             res.Search.forEach(movie => {
               movieImdbIDS.push(movie.imdbID);
             });
+            console.log(res);
             setMaxNumOfPages((res.totalResults % loadAmount) !== 0 ? parseInt(res.totalResults / loadAmount) + 1 : parseInt(res.totalResults / loadAmount));
             getMoviesData(movieImdbIDS);
             setErrorMessage('');
@@ -116,19 +117,13 @@ export default function SearchMoviePage() {
             {moviesData !== undefined ? renderMovies() : ''}
           </tbody>
         </table>
-        <nav className="mx-auto">
-          <ul className="pagination">
-            <li className="page-item page-link">
-              <span aria-hidden="true">&laquo;</span>
-            </li>
-            <li className="page-item page-link">1</li>
-            <li className="page-item page-link">2</li>
-            <li className="page-item page-link">3</li>
-            <li className="page-item page-link">
-              <span aria-hidden="true">&raquo;</span>
-            </li>
-          </ul>
-        </nav>
+        <div className="my-5">
+          <input className="btn btn btn-outline-primary mx-1" type="button" value="&laquo;" />
+          <input className="btn btn-primary mx-1" type="button" value={page - 1} disabled={page - 1 <= 0 ? true : false} />
+          <input className="btn btn-primary mx-1" type="button" value={page} disabled />
+          <input className="btn btn-primary mx-1" type="button" value={page + 1} disabled={page + 1 >= maxNumOfPages ? true : false} />
+          <input className="btn btn btn-outline-primary mx-1" type="button" value="&raquo;" />
+        </div>
       </div>
     </div>
   )
