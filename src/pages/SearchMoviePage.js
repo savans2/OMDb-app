@@ -10,7 +10,7 @@ export default function SearchMoviePage() {
   const [page, setPage] = useState(1);
   const [maxNumOfPages, setMaxNumOfPages] = useState(1);
   const [loadAmount, setLoadAmount] = useState(10);
-  const [sortType, setSortType] = useState('asc');
+  const [sortType, setSortType] = useState();
 
   const searchHandler = debounce(() => {
     const url = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=${SearchTitleRef.current.value}&y=${SearchYearRef.current.value}&page=${page}`;
@@ -24,8 +24,9 @@ export default function SearchMoviePage() {
               movieImdbIDS.push(movie.imdbID);
             });
             setMaxNumOfPages((res.totalResults % loadAmount) !== 0 ? parseInt(res.totalResults / loadAmount) + 1 : parseInt(res.totalResults / loadAmount));
-            getMoviesData(movieImdbIDS);
-            setErrorMessage('');
+            getMoviesData(movieImdbIDS).then(moviesData => {
+              setMoviesData([moviesData]);
+            });
           } else {
             setErrorMessage(res.Error);
           }
@@ -41,7 +42,7 @@ export default function SearchMoviePage() {
       const jsonRes = await res.json();
       movies.push(jsonRes);
     }
-    addMovies(movies);
+    return movies;
   }
 
   function addMovies(newMovies) {
@@ -61,15 +62,20 @@ export default function SearchMoviePage() {
     }
   }
 
-  function sortByLength() {
-    let sortedByTitle = [...moviesData].sort((a, b) => {
-      if (a.length > b.length) {
-        return 1
+  function sortByLength(property) {
+    let sorted = moviesData[page - 1].sort((a, b) => {
+      if (sortType === 'asc') {
+        setSortType('desc');
+        return (a[property].length > b[property].length) ? 1 : -1;
       } else {
-        return -1;
+        setSortType('asc');
+        return (a[property].length > b[property].length) ? -1 : 1;
       }
     });
-    setMoviesData(sortedByTitle);
+
+    let newMoviesData = [...moviesData];
+    newMoviesData[page - 1] = sorted;
+    setMoviesData(newMoviesData);
   }
 
   function sortByYear() {
@@ -100,8 +106,20 @@ export default function SearchMoviePage() {
           res.Search.forEach(movie => {
             movieImdbIDS.push(movie.imdbID);
           });
-          getMoviesData(movieImdbIDS);
+          getMoviesData(movieImdbIDS).then(moviesData => {
+            addMovies(moviesData);
+          });
         });
+    }
+  }
+
+  function getSortingType() {
+    if (sortType === 'desc') {
+      return 'ascending'
+    } else if (sortType === 'asc') {
+      return 'descending'
+    } else {
+      return 'none'
     }
   }
 
@@ -127,14 +145,15 @@ export default function SearchMoviePage() {
         />
       </div>
       <div className="d-flex flex-wrap justify-content-center">
+        <p>Sorting order: {getSortingType()}</p>
         <table className="table my-5">
           <thead>
             <tr>
-              <th scope="col" onClick={() => { sortByLength() }}>Title</th>
+              <th scope="col" onClick={() => { sortByLength('Title') }}>Title</th>
               <th scope="col" onClick={() => { sortByYear() }}>Year</th>
-              <th scope="col" onClick={() => { sortByLength() }}>Genre</th>
-              <th scope="col" onClick={() => { sortByLength() }}>Description</th>
-              <th scope="col" onClick={() => { sortByLength() }}>Actors</th>
+              <th scope="col" onClick={() => { sortByLength('Genre') }}>Genre</th>
+              <th scope="col" onClick={() => { sortByLength('Plot') }}>Description</th>
+              <th scope="col" onClick={() => { sortByLength('Actors') }}>Actors</th>
               <th scope="col">Poster</th>
             </tr>
           </thead>
