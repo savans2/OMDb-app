@@ -27,6 +27,7 @@ export default function SearchMoviePage() {
             getMoviesData(movieImdbIDS).then(moviesData => {
               setMoviesData([moviesData]);
               setSortType(undefined);
+              setPage(1);
             });
           } else {
             setErrorMessage(res.Error);
