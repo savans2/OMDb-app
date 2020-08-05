@@ -52,20 +52,16 @@ export default function SearchMoviePage() {
   }
 
   function renderMovies() {
-    // console.log('renderMovies page', page - 1)
-    // console.log('renderMovies moviesData', moviesData)
     if (moviesData[page - 1] !== undefined) {
       const movieList = moviesData[page - 1].map(movieData => {
         return <Movie movieDetails={movieData} key={movieData.imdbID} />
       });
-      // console.log('movieList', movieList);
       return movieList;
     }
   }
 
   function sortByLength() {
     let sortedByTitle = [...moviesData].sort((a, b) => {
-      console.log(a.Title);
       if (a.length > b.length) {
         return 1
       } else {
@@ -79,20 +75,17 @@ export default function SearchMoviePage() {
     /**
      * Find most efficent sorting algorithm
      */
-    console.log(moviesData);
-    let sortedByTitle = [...moviesData].sort((a, b) => {
+    let sortedByYear = [...moviesData[page - 1]].sort((a, b) => {
+      console.log(typeof (b), typeof (a))
       if (a > b) {
-        console.log('a.Year > b.Year', a.Year > b.Year)
         return 1
       } else {
-        console.log('a.Year > b.Year', a.Year > b.Year)
         return -1;
       }
     });
-    console.log(sortedByTitle);
-    setMoviesData(sortedByTitle);
+
+    // setMoviesData(sortedByYear);
   }
-  console.log('moviesData', moviesData);
 
   function getNextPage() {
     if (page < moviesData.length) {
