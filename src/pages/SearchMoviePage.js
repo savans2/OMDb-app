@@ -10,6 +10,7 @@ export default function SearchMoviePage() {
   const [page, setPage] = useState(1);
   const [maxNumOfPages, setMaxNumOfPages] = useState(1);
   const [loadAmount, setLoadAmount] = useState(10);
+  const [sortType, setSortType] = useState('asc');
 
   const searchHandler = debounce(() => {
     const url = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=${SearchTitleRef.current.value}&y=${SearchYearRef.current.value}&page=${page}`;
@@ -72,19 +73,18 @@ export default function SearchMoviePage() {
   }
 
   function sortByYear() {
-    /**
-     * Find most efficent sorting algorithm
-     */
-    let sortedByYear = [...moviesData[page - 1]].sort((a, b) => {
-      console.log(typeof (b), typeof (a))
-      if (a > b) {
-        return 1
+    let sorted = moviesData[page - 1].sort((a, b) => {
+      if (sortType === 'asc') {
+        setSortType('desc');
+        return (a.Year > b.Year) ? 1 : -1;
       } else {
-        return -1;
+        return (a.Year > b.Year) ? -1 : 1;
       }
     });
 
-    // setMoviesData(sortedByYear);
+    let newMoviesData = [...moviesData];
+    newMoviesData[page - 1] = sorted;
+    setMoviesData(newMoviesData);
   }
 
   function getNextPage() {
