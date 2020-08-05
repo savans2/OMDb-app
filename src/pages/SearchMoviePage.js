@@ -6,7 +6,7 @@ export default function SearchMoviePage() {
   const SearchTitleRef = useRef();
   const SearchYearRef = useRef();
   const [errorMessage, setErrorMessage] = useState();
-  const [moviesData, setMoviesData] = useState();
+  const [moviesData, setMoviesData] = useState([[]]);
   const [page, setPage] = useState(1);
   const [maxNumOfPages, setMaxNumOfPages] = useState(1);
   const [loadAmount, setLoadAmount] = useState(10);
@@ -22,7 +22,6 @@ export default function SearchMoviePage() {
             res.Search.forEach(movie => {
               movieImdbIDS.push(movie.imdbID);
             });
-            console.log(res);
             setMaxNumOfPages((res.totalResults % loadAmount) !== 0 ? parseInt(res.totalResults / loadAmount) + 1 : parseInt(res.totalResults / loadAmount));
             getMoviesData(movieImdbIDS);
             setErrorMessage('');
@@ -41,18 +40,32 @@ export default function SearchMoviePage() {
       const jsonRes = await res.json();
       movies.push(jsonRes);
     }
-    setMoviesData(movies);
+    addMovies(movies);
+  }
+
+  function addMovies(newMovies) {
+    if (moviesData == false) {
+      setMoviesData([newMovies]);
+    } else {
+      setMoviesData([...moviesData, newMovies]);
+    }
   }
 
   function renderMovies() {
-    const movieList = moviesData.map(movieData => {
-      return <Movie movieDetails={movieData} key={movieData.imdbID} />
-    });
-    return movieList;
+    // console.log('renderMovies page', page - 1)
+    // console.log('renderMovies moviesData', moviesData)
+    if (moviesData[page - 1] !== undefined) {
+      const movieList = moviesData[page - 1].map(movieData => {
+        return <Movie movieDetails={movieData} key={movieData.imdbID} />
+      });
+      // console.log('movieList', movieList);
+      return movieList;
+    }
   }
 
   function sortByLength() {
     let sortedByTitle = [...moviesData].sort((a, b) => {
+      console.log(a.Title);
       if (a.length > b.length) {
         return 1
       } else {
@@ -64,7 +77,7 @@ export default function SearchMoviePage() {
 
   function sortByYear() {
     /**
-     * Find sorting most efficent sorting algorithm
+     * Find most efficent sorting algorithm
      */
     console.log(moviesData);
     let sortedByTitle = [...moviesData].sort((a, b) => {
@@ -78,6 +91,24 @@ export default function SearchMoviePage() {
     });
     console.log(sortedByTitle);
     setMoviesData(sortedByTitle);
+  }
+  console.log('moviesData', moviesData);
+
+  function getNextPage() {
+    if (page < moviesData.length) {
+      setPage(page + 1);
+    } else {
+      setPage(page + 1);
+      const url = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=${SearchTitleRef.current.value}&y=${SearchYearRef.current.value}&page=${page + 1}`;
+      fetch(url).then(res => res.json())
+        .then(res => {
+          const movieImdbIDS = [];
+          res.Search.forEach(movie => {
+            movieImdbIDS.push(movie.imdbID);
+          });
+          getMoviesData(movieImdbIDS);
+        });
+    }
   }
 
   return (
@@ -119,9 +150,9 @@ export default function SearchMoviePage() {
         </table>
         <div className="my-5">
           <input className="btn btn btn-outline-primary mx-1" type="button" value="&laquo;" />
-          <input className="btn btn-primary mx-1" type="button" value={page - 1} disabled={page - 1 <= 0 ? true : false} />
+          <input className="btn btn-primary mx-1" type="button" value={page - 1} disabled={page - 1 <= 0 ? true : false} onClick={() => setPage(page - 1)} />
           <input className="btn btn-primary mx-1" type="button" value={page} disabled />
-          <input className="btn btn-primary mx-1" type="button" value={page + 1} disabled={page + 1 >= maxNumOfPages ? true : false} />
+          <input className="btn btn-primary mx-1" type="button" value={page + 1} disabled={page + 1 >= maxNumOfPages ? true : false} onClick={() => { getNextPage() }} />
           <input className="btn btn btn-outline-primary mx-1" type="button" value="&raquo;" />
         </div>
       </div>
